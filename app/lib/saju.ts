@@ -35,6 +35,18 @@ export type CategoryReading = {
   avoid: string;
 };
 
+export type LifePeriod = {
+  decade: string;
+  ages: string;
+  score: number;
+  band: string;
+  headline: string;
+  body: string;
+  focus: string;
+  care: string;
+  traditional: string[];
+};
+
 export type SajuReading = {
   profile: Profile;
   targetDate: string;
@@ -59,6 +71,16 @@ export type SajuReading = {
   luckyDirection: string;
   confidence: string;
   birthDateGuide: string;
+  life: {
+    available: boolean;
+    keyword: string;
+    summary: string;
+    startNote: string;
+    directionTerm: string;
+    coreCards: Array<{ label: string; title: string; body: string }>;
+    timeline: LifePeriod[];
+    notice: string;
+  };
 };
 
 const ELEMENTS: ElementName[] = ["목", "화", "토", "금", "수"];
@@ -204,6 +226,46 @@ function tenGodShort(value: string) {
     편인: "새로운 관점", 정인: "배움과 도움",
   };
   return labels[value] ?? "일상의 흐름";
+}
+
+function lifeTheme(value: string) {
+  if (value === "비견" || value === "겁재") return {
+    headline: "내 자리와 사람 사이의 균형을 배우는 시기",
+    body: "혼자 해내는 힘과 함께 움직이는 힘이 동시에 중요해져요. 비교보다 역할을 분명히 할수록 내 색깔이 또렷해집니다.",
+    focus: "독립 · 협업 · 내 기준 세우기",
+    care: "비교심 · 무리한 경쟁 · 몫 다툼",
+  };
+  if (value === "식신" || value === "상관") return {
+    headline: "배운 것과 생각을 밖으로 보여주는 시기",
+    body: "말·기획·창작처럼 내 안의 것을 결과물로 꺼내는 흐름이 커져요. 솔직함에 한 번의 정리를 더하면 실력이 인정받기 쉽습니다.",
+    focus: "표현 · 창작 · 결과물 만들기",
+    care: "말이 앞서는 선택 · 산만한 확장",
+  };
+  if (value === "편재" || value === "정재") return {
+    headline: "생활의 기반과 실속을 다지는 시기",
+    body: "돈·시간·일처럼 현실적인 자원을 관리하는 힘이 커져요. 큰 한 번보다 꾸준히 남기는 습관이 다음 단계의 바탕이 됩니다.",
+    focus: "재정 · 생활 기반 · 꾸준한 성과",
+    care: "조급한 투자 · 성과만 좇기",
+  };
+  if (value === "칠살" || value === "정관") return {
+    headline: "책임이 커지고 사회적 기준이 선명해지는 시기",
+    body: "직업·직책·약속처럼 책임을 보여줄 일이 늘기 쉬워요. 모든 짐을 혼자 들기보다 기준과 순서를 정하면 신뢰가 자산이 됩니다.",
+    focus: "직업 · 책임 · 신뢰 쌓기",
+    care: "과도한 압박 · 완벽해야 한다는 마음",
+  };
+  return {
+    headline: "배우고 정리하며 다음 방향을 찾는 시기",
+    body: "지식·경험·도움이 새로운 길을 여는 흐름이에요. 충분히 생각하되 작은 실행을 함께 두면 배움이 실제 변화로 이어집니다.",
+    focus: "배움 · 자격 · 내면 정리",
+    care: "생각만 길어지기 · 실행 미루기",
+  };
+}
+
+function lifeRelationText(value: string) {
+  if (value === "합") return "사람이나 기회가 자연스럽게 이어지기 쉬워, 관계를 잘 활용하면 흐름이 넓어져요.";
+  if (value === "충") return "환경이나 역할을 바꾸고 싶은 마음이 커질 수 있어요. 변화 자체보다 방향을 먼저 정하는 것이 중요해요.";
+  if (value === "형") return "같은 고민을 반복하기 쉬운 때라, 익숙한 방식 밖의 조언을 받아들이면 막힘이 풀려요.";
+  return "큰 충돌을 만들기보다 꾸준히 쌓고 조율하는 쪽에서 힘이 생겨요.";
 }
 
 function band(score: number) {
@@ -388,6 +450,49 @@ export function createReading(profile: Profile, targetDate: string): SajuReading
   const goodHours = [...rankedHours].sort((a, b) => b.score - a.score || a.index - b.index).slice(0, 2).map((hour) => hour.label);
   const cautionHours = [...rankedHours].sort((a, b) => a.score - b.score || a.index - b.index).slice(0, 2).map((hour) => hour.label);
   const primaryFavorable = favorable[0];
+  const lifeKeyword = `${ELEMENT_META[dayElement].plainLabel}의 힘을 ${favorable.map((element) => ELEMENT_META[element].plainLabel).join("과 ")}으로 완성하는 삶`;
+  const lifeSummary = `${profile.name || "당신"}님은 ${ELEMENT_META[dayElement].plainText}을 삶의 중심축으로 삼는 편이에요. 오래 갈수록 ${favorable.map((element) => ELEMENT_META[element].plainText).join("과 ")}을 의식할 때 타고난 힘이 한쪽으로 치우치지 않고 더 안정적으로 쓰입니다.`;
+  const lifeAvailable = profile.gender !== "none";
+  let lifeTimeline: LifePeriod[] = [];
+  let lifeStartNote = "";
+  let lifeDirectionTerm = "";
+
+  if (lifeAvailable) {
+    const yun = eight.getYun(profile.gender === "male" ? 1 : 0, 2);
+    const daYun = yun.getDaYun(12).filter((flow) => flow.getGanZhi());
+    const firstFlow = daYun[0];
+    lifeStartNote = `첫 큰 흐름은 약 ${firstFlow.getStartAge()}세에 시작해요${profile.unknownTime ? ". 출생 시간을 몰라 시작 시점은 조금 달라질 수 있어요" : ""}.`;
+    lifeDirectionTerm = yun.isForward() ? "시간의 순서대로 흐름을 읽어요 (순행)" : "시간의 반대 순서로 흐름을 읽어요 (역행)";
+
+    lifeTimeline = Array.from({ length: 8 }, (_, index) => {
+      const startAge = (index + 1) * 10;
+      const endAge = startAge + 9;
+      const middleAge = startAge + 5;
+      const activeFlow = daYun.find((flow) => flow.getStartAge() <= middleAge && flow.getEndAge() >= middleAge) ?? daYun[daYun.length - 1];
+      const ganZhi = activeFlow.getGanZhi();
+      const flowTenGod = tenGod(dayGan, ganZhi[0]);
+      const flowRelation = relation(dayBranch, ganZhi[1]);
+      const flowElements = [GAN_ELEMENT[ganZhi[0]], ZHI_ELEMENT[ganZhi[1]]];
+      const fitCount = flowElements.filter((element) => favorable.includes(element)).length;
+      const score = clamp(58 + fitCount * 10 + (flowRelation === "합" ? 7 : 0) - (flowRelation === "충" ? 8 : 0) - (flowRelation === "형" ? 4 : 0), 45, 90);
+      const theme = lifeTheme(flowTenGod);
+      const traditional = daYun
+        .filter((flow) => flow.getStartAge() <= endAge && flow.getEndAge() >= startAge)
+        .map((flow) => `${Math.max(startAge, flow.getStartAge())}–${Math.min(endAge, flow.getEndAge())}세 · ${flow.getGanZhi()}`);
+
+      return {
+        decade: `${index + 1}0대`,
+        ages: `${startAge}–${endAge}세`,
+        score,
+        band: score >= 76 ? "힘을 넓히기" : score >= 65 ? "기반을 키우기" : score >= 55 ? "방향을 다듬기" : "속도를 조절하기",
+        headline: theme.headline,
+        body: `${theme.body} ${lifeRelationText(flowRelation)}`,
+        focus: theme.focus,
+        care: theme.care,
+        traditional,
+      };
+    });
+  }
 
   return {
     profile,
@@ -413,5 +518,19 @@ export function createReading(profile: Profile, targetDate: string): SajuReading
     luckyDirection: ELEMENT_META[primaryFavorable].direction,
     confidence: profile.unknownTime ? "출생 시간을 몰라 해·달·날만으로 간략히 읽었어요" : "태어난 해·달·날·시간을 모두 반영했어요",
     birthDateGuide,
+    life: {
+      available: lifeAvailable,
+      keyword: lifeKeyword,
+      summary: lifeSummary,
+      startNote: lifeStartNote,
+      directionTerm: lifeDirectionTerm,
+      coreCards: [
+        { label: "평생의 중심", title: `${ELEMENT_META[dayElement].plainLabel}하는 사람`, body: `${ELEMENT_META[dayElement].plainText}이 타고난 중심이에요. 이 힘을 억누르기보다 상황에 맞게 쓰는 것이 중요해요.` },
+        { label: "오래 갈수록 더할 힘", title: favorable.map((element) => ELEMENT_META[element].plainLabel).join(" · "), body: favorable.map((element) => ELEMENT_META[element].plainText).join(" 그리고 ") + "을 더할 때 삶의 균형이 좋아져요." },
+        { label: "평생의 균형 포인트", title: `${ELEMENT_META[dominantElement].plainLabel}의 과속 줄이기`, body: ELEMENT_META[dominantElement].excessText + " 중요한 결론일수록 잠시 멈춰 확인해 보세요." },
+      ],
+      timeline: lifeTimeline,
+      notice: lifeAvailable ? "나이대 점수는 좋고 나쁜 운명의 등급이 아니라, 그 시기의 흐름을 내 편으로 쓰기 쉬운 정도예요." : "전통 대운은 태어난 해의 음양과 성별에 따라 진행 방향이 달라져요. 성별을 선택하고 다시 보기를 누르면 10대부터 80대까지 정확한 방향으로 계산해 드려요.",
+    },
   };
 }

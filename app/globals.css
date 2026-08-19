@@ -500,6 +500,11 @@ h1 em::after { display: none; }
 .energyNotes > div:last-child { background: #fff2f5; }
 .good { background: var(--mint); }
 .caution { background: var(--coral); }
+.lifeJump { margin-top: 13px; padding: 11px 13px; display: grid; grid-template-columns: 32px 1fr auto; gap: 9px; align-items: center; border-radius: 13px; background: linear-gradient(100deg, #eee8ff, #fff1f5); color: #6030ca; transition: .2s; }
+.lifeJump:hover { transform: translateY(-1px); box-shadow: 0 9px 20px rgba(89,48,181,.1); }
+.lifeJump span { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 10px; background: white; font-family: serif; font-size: 10px; box-shadow: 0 5px 13px rgba(73,41,139,.1); }
+.lifeJump b { font-size: 9px; }
+.lifeJump i { font-size: 12px; font-style: normal; }
 
 .pillarsSection, .dayGuide, .sourcesSection { max-width: 1180px; }
 .sectionIntro h2, .detailHeading h2, .sourcesHeading h2, .guideHeading h2 { font-family: inherit; font-weight: 900; }
@@ -570,4 +575,133 @@ h1 em::after { display: none; }
 
 @media (prefers-reduced-motion: reduce) {
   .heroOrbit::before { animation: none; }
+}
+
+/* lifetime reading */
+.lifeSection {
+  max-width: 1180px;
+  margin: 0 auto 100px;
+  padding: 0 30px;
+  scroll-margin-top: 24px;
+}
+.lifeHeading { display: grid; grid-template-columns: 1.15fr .85fr; gap: 60px; align-items: end; margin-bottom: 27px; }
+.lifeNumber { display: inline-flex; margin-bottom: 11px; color: var(--violet); font-size: 9px; font-weight: 900; letter-spacing: .14em; }
+.lifeHeading div > p { margin: 0 0 4px; color: var(--violet); font-size: 10px; font-weight: 800; letter-spacing: .1em; }
+.lifeHeading h2 { margin: 0; color: #25183b; font-size: 35px; font-weight: 900; letter-spacing: -.045em; }
+.lifeHeading h2 em { color: var(--violet); font-style: normal; }
+.lifeHeading > p { margin: 0 0 3px; color: #716883; font-size: 11px; line-height: 1.75; }
+
+.lifeHeroCard {
+  min-height: 280px;
+  padding: 48px 54px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  overflow: hidden;
+  border-radius: 31px;
+  background:
+    radial-gradient(circle at 78% 15%, rgba(255,255,255,.18), transparent 22%),
+    radial-gradient(circle at 89% 100%, rgba(255,207,104,.22), transparent 30%),
+    linear-gradient(130deg, #2d1152, #5f2ec9 58%, #9c45d9 100%);
+  color: white;
+  box-shadow: 0 28px 65px rgba(67,31,132,.2);
+}
+.lifeKeyword { max-width: 690px; position: relative; z-index: 2; }
+.lifeKeyword > span { display: inline-flex; padding: 7px 10px; border: 1px solid rgba(255,255,255,.2); border-radius: 999px; background: rgba(255,255,255,.1); color: #eadfff; font-size: 9px; font-weight: 900; letter-spacing: .08em; }
+.lifeKeyword h3 { margin: 17px 0 14px; color: #fff; font-size: clamp(25px, 3vw, 38px); line-height: 1.3; letter-spacing: -.045em; }
+.lifeKeyword p { max-width: 660px; margin: 0; color: rgba(255,255,255,.72); font-size: 12px; line-height: 1.78; }
+.lifeMotif { width: 190px; height: 190px; flex: none; position: relative; display: grid; place-items: center; border: 1px solid rgba(255,255,255,.18); border-radius: 50%; box-shadow: inset 0 0 0 28px rgba(255,255,255,.035); }
+.lifeMotif::before { content: ""; position: absolute; inset: 26px; border: 1px dashed rgba(255,255,255,.24); border-radius: 50%; }
+.lifeMotif b { width: 82px; height: 82px; display: grid; place-items: center; border-radius: 26px; background: white; color: #5a2cc0; font-family: serif; font-size: 26px; box-shadow: 0 14px 35px rgba(35,11,78,.25); transform: rotate(4deg); }
+.lifeMotif i { width: 19px; height: 19px; position: absolute; z-index: 2; border: 3px solid rgba(255,255,255,.7); border-radius: 50%; box-shadow: 0 7px 15px rgba(32,10,69,.2); }
+.lifeMotif i:nth-child(1) { left: 8px; top: 65px; background: #35ceb0; }
+.lifeMotif i:nth-child(2) { right: 16px; top: 29px; background: #ffcf61; }
+.lifeMotif i:nth-child(3) { right: 0; bottom: 42px; background: #ff7192; }
+
+.lifeCoreGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 13px; margin: 16px 0 24px; }
+.lifeCoreGrid article { min-height: 200px; padding: 23px 24px; position: relative; overflow: hidden; border: 1px solid #e5daf5; border-radius: 22px; background: linear-gradient(145deg, #f3edff, #fff); }
+.lifeCoreGrid article:nth-child(2) { border-color: #fde1b3; background: linear-gradient(145deg, #fff5d9, #fff); }
+.lifeCoreGrid article:nth-child(3) { border-color: #d4f1e9; background: linear-gradient(145deg, #eafff8, #fff); }
+.lifeCoreGrid article > span { position: absolute; top: 13px; right: 18px; color: rgba(104,57,203,.11); font-size: 42px; font-weight: 900; line-height: 1; }
+.lifeCoreGrid article > p { margin: 0 0 10px; color: var(--violet); font-size: 9px; font-weight: 900; letter-spacing: .1em; }
+.lifeCoreGrid article:nth-child(2) > p { color: #aa7614; }
+.lifeCoreGrid article:nth-child(3) > p { color: #158b78; }
+.lifeCoreGrid h3 { max-width: 80%; margin: 0 0 12px; color: #2d2142; font-size: 18px; line-height: 1.4; }
+.lifeCoreGrid article > div { color: #71677f; font-size: 10px; line-height: 1.72; }
+
+.lifeChartCard { margin-top: 20px; padding: 27px 29px 23px; border: 1px solid rgba(111,62,232,.13); border-radius: 25px; background: rgba(255,255,255,.88); box-shadow: 0 20px 50px rgba(63,35,114,.08); }
+.lifeChartHeading { display: flex; justify-content: space-between; align-items: end; gap: 25px; margin-bottom: 23px; }
+.lifeChartHeading span { color: var(--violet); font-size: 9px; font-weight: 900; letter-spacing: .1em; }
+.lifeChartHeading h3 { margin: 4px 0 0; color: #2b1f3f; font-size: 21px; }
+.lifeChartHeading > div:last-child { text-align: right; }
+.lifeChartHeading b, .lifeChartHeading small { display: block; }
+.lifeChartHeading b { color: #51455f; font-size: 10px; }
+.lifeChartHeading small { margin-top: 5px; color: #958a9f; font-size: 8px; }
+.lifeChart { min-width: 700px; height: 205px; display: grid; grid-template-columns: repeat(8, minmax(68px, 1fr)); gap: 9px; align-items: end; overflow: hidden; }
+.lifeChart > div { height: 100%; display: grid; grid-template-rows: 18px 1fr 20px 18px; align-items: end; text-align: center; }
+.lifeChart > div > b { color: #6e6379; font-size: 9px; }
+.lifeChart > div > div { height: 135px; display: flex; align-items: end; overflow: hidden; border-radius: 13px 13px 7px 7px; background: #f0ebf6; }
+.lifeChart i { width: 100%; display: block; border-radius: 12px 12px 6px 6px; background: linear-gradient(180deg, #8e5ef0, #5a2ac6); box-shadow: inset 0 1px rgba(255,255,255,.3); }
+.lifeChart > div:nth-child(2) i, .lifeChart > div:nth-child(6) i { background: linear-gradient(180deg, #ff91a9, #ee5578); }
+.lifeChart > div:nth-child(3) i, .lifeChart > div:nth-child(7) i { background: linear-gradient(180deg, #56d8bf, #20ae95); }
+.lifeChart > div:nth-child(4) i, .lifeChart > div:nth-child(8) i { background: linear-gradient(180deg, #ffd477, #eba931); }
+.lifeChart > div:nth-child(5) i { background: linear-gradient(180deg, #7fc6fa, #418fdf); }
+.lifeChart > div > span { color: #3b304a; font-size: 10px; font-weight: 900; }
+.lifeChart > div > small { color: #9a91a2; font-size: 7px; }
+
+.lifePeriodGrid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 13px; margin-top: 15px; }
+.lifePeriodCard { min-width: 0; padding: 24px; border: 1px solid #e5dcf2; border-radius: 22px; background: rgba(255,255,255,.84); box-shadow: 0 14px 36px rgba(65,38,118,.055); }
+.lifePeriodTop { display: grid; grid-template-columns: 52px 1fr auto; gap: 12px; align-items: center; }
+.lifePeriodTop > span { width: 52px; height: 52px; display: grid; place-items: center; border-radius: 17px; background: linear-gradient(145deg, #6d3de0, #9253e7); color: white; font-size: 15px; font-weight: 900; box-shadow: 0 9px 20px rgba(101,53,207,.2); }
+.lifePeriodCard:nth-child(2n) .lifePeriodTop > span { background: linear-gradient(145deg, #f05b7c, #ff8b77); }
+.lifePeriodCard:nth-child(3n) .lifePeriodTop > span { background: linear-gradient(145deg, #1caf96, #56d1b8); }
+.lifePeriodTop div small, .lifePeriodTop div b { display: block; }
+.lifePeriodTop div small { color: #9a91a3; font-size: 8px; }
+.lifePeriodTop div b { margin-top: 3px; color: #6e3ed5; font-size: 10px; }
+.lifePeriodTop > i { width: 35px; height: 35px; display: grid; place-items: center; border-radius: 50%; background: #f2ecff; color: var(--violet); font-size: 10px; font-style: normal; font-weight: 900; }
+.lifePeriodCard > h3 { margin: 19px 0 10px; color: #302442; font-size: 16px; line-height: 1.45; }
+.lifePeriodCard > p { min-height: 66px; margin: 0; color: #71687d; font-size: 10px; line-height: 1.72; }
+.lifePeriodCard dl { margin: 17px 0 0; display: grid; grid-template-columns: 1fr 1fr; border: 1px solid #eee8f4; border-radius: 13px; overflow: hidden; }
+.lifePeriodCard dl > div { padding: 11px 12px; background: #faf8ff; }
+.lifePeriodCard dl > div + div { border-left: 1px solid #eee8f4; background: #fff8fa; }
+.lifePeriodCard dt { color: #9a91a2; font-size: 7px; }
+.lifePeriodCard dd { margin: 4px 0 0; color: #54495f; font-size: 9px; font-weight: 800; line-height: 1.45; }
+.traditionalFlow { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 13px; }
+.traditionalFlow span { margin-right: 2px; color: #9a91a2; font-size: 7px; }
+.traditionalFlow b { padding: 5px 7px; border-radius: 7px; background: #eee8fb; color: #6c43c6; font-size: 7px; }
+.termHelp { display: block; margin-top: 8px; color: #a39aa9; font-size: 7px; line-height: 1.45; }
+.lifeDisclaimer { margin: 14px 0 0; padding: 13px 16px; border-radius: 13px; background: #eee8fb; color: #776d82; font-size: 9px; line-height: 1.6; }
+.lifeDisclaimer span { margin-right: 9px; color: var(--violet); font-weight: 900; }
+.lifeUnavailable { display: grid; grid-template-columns: 45px 1fr auto; gap: 15px; align-items: center; margin-top: 20px; padding: 21px 23px; border: 1px solid #f3dba8; border-radius: 20px; background: linear-gradient(120deg, #fff6dd, #fff); }
+.lifeUnavailable > span { width: 45px; height: 45px; display: grid; place-items: center; border-radius: 15px; background: #ffd978; color: #7e5807; font-size: 18px; font-weight: 900; }
+.lifeUnavailable h3 { margin: 0 0 5px; color: #4b3b1e; font-size: 14px; }
+.lifeUnavailable p { margin: 0; color: #81745c; font-size: 9px; line-height: 1.6; }
+.lifeUnavailable a { padding: 9px 12px; border-radius: 10px; background: white; color: #7758bf; font-size: 9px; font-weight: 900; white-space: nowrap; }
+
+@media (max-width: 820px) {
+  .lifeSection { padding-left: 20px; padding-right: 20px; }
+  .lifeHeading { grid-template-columns: 1fr; gap: 14px; }
+  .lifeMotif { display: none; }
+  .lifeCoreGrid { grid-template-columns: 1fr; }
+  .lifeCoreGrid article { min-height: 160px; }
+  .lifeChartCard { overflow-x: auto; }
+  .lifePeriodGrid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 560px) {
+  .lifeSection { margin-bottom: 70px; padding-left: 10px; padding-right: 10px; }
+  .lifeHeading { padding: 0 10px; }
+  .lifeHeading h2 { font-size: 29px; }
+  .lifeHeroCard { min-height: 300px; padding: 34px 25px; border-radius: 26px; }
+  .lifeKeyword h3 { font-size: 25px; }
+  .lifeCoreGrid { gap: 9px; }
+  .lifeChartCard { padding: 23px 18px 19px; }
+  .lifeChartHeading { display: grid; gap: 9px; }
+  .lifeChartHeading > div:last-child { text-align: left; }
+  .lifePeriodCard { padding: 21px 18px; }
+  .lifePeriodCard dl { grid-template-columns: 1fr; }
+  .lifePeriodCard dl > div + div { border-left: 0; border-top: 1px solid #eee8f4; }
+  .lifeUnavailable { grid-template-columns: 42px 1fr; }
+  .lifeUnavailable a { grid-column: 1 / -1; text-align: center; }
 }

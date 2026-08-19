@@ -116,6 +116,7 @@ export default function Home() {
         </a>
         <nav aria-label="주요 메뉴">
           <a href="#today">오늘의 흐름</a>
+          <a href="#life">인생 흐름</a>
           <a href="#details">운세 자세히</a>
           <a href="#sources">해석 원칙</a>
         </nav>
@@ -126,7 +127,7 @@ export default function Home() {
         <div className="heroCopy">
           <div className="eyebrow"><span /> CLASSIC WISDOM, TODAY&apos;S LANGUAGE</div>
           <h1>오늘의 나를<br /><em>조금 더 잘 쓰는 법</em></h1>
-          <p>태어난 순간의 사주와 오늘의 흐름을 함께 읽어, 힘을 줄 곳과 쉬어갈 곳을 어려운 용어 없이 알려드려요.</p>
+          <p>태어난 순간의 사주를 바탕으로 오늘의 리듬부터 10대–80대 인생 흐름까지, 힘을 줄 곳과 쉬어갈 곳을 어려운 용어 없이 알려드려요.</p>
           <div className="heroFacts">
             <span><b>4</b>권의 명리 고전</span>
             <span><b>24</b>절기 반영</span>
@@ -210,7 +211,7 @@ export default function Home() {
 
           <div className="twoColumns formRow">
             <div>
-              <label htmlFor="gender">성별</label>
+              <label htmlFor="gender">성별<span className="inputHint">대운 방향 계산</span></label>
               <select id="gender" value={draft.gender} onChange={(event) => update("gender", event.target.value as Profile["gender"])}>
                 <option value="female">여성</option>
                 <option value="male">남성</option>
@@ -231,7 +232,7 @@ export default function Home() {
           </label>
           <p className="formHelp">대한민국 표준시(UTC+9)를 사용합니다. 출생 시간이 없으면 시주를 제외해 해석 범위가 줄어듭니다.</p>
           {formError && <p className="formError" role="alert">{formError}</p>}
-          <button className="primaryButton" type="submit">오늘의 사주 보기 <span>→</span></button>
+          <button className="primaryButton" type="submit">오늘과 인생 사주 보기 <span>→</span></button>
           <p className="privacy"><span>●</span> 입력 정보는 브라우저 안에서만 계산하며 서버에 저장하지 않아요.</p>
         </form>
 
@@ -299,6 +300,7 @@ export default function Home() {
             <div><span className="dot good" /><p><b>오늘 더 써보면 좋은 태도</b>{reading.favorableText}</p></div>
             <div><span className="dot caution" /><p><b>오늘 지나치기 쉬운 모습</b>{reading.cautionText}</p></div>
           </div>
+          <a className="lifeJump" href="#life"><span>人生</span><b>10대부터 80대까지 인생 흐름 보기</b><i>↓</i></a>
         </article>
       </section>
 
@@ -335,13 +337,96 @@ export default function Home() {
           <summary>전문 명리 용어와 계산 기준 확인하기</summary>
           <p>사주 원국: {reading.pillars.map((pillar) => pillar.ganZhi).join(" · ")} / 일간: {reading.dayMaster.gan}{reading.dayMaster.element} / 세력: {reading.dayMaster.term} {reading.dayMaster.ratio}% / 오늘 십성: {reading.tenGod} / {reading.relationLabel}</p>
           <p>연주와 월주는 입춘·절기 교접 시각을 기준으로 하며, 야자시는 당일 일주로 보는 2파 기준을 적용했습니다.</p>
+          <p>인생 흐름은 태어난 해의 음양과 성별로 대운의 진행 방향을 정하고, 출생 시각에서 가까운 절기까지의 간격으로 첫 대운 시작 나이를 계산합니다.</p>
           <p>다섯 성향의 비율은 천간·지지의 대표 오행에 태어난 달의 계절 가중치를 더한 비교값입니다. 숨은 천간까지 모두 세는 정밀 감정과는 범위가 다릅니다.</p>
         </details>
       </section>
 
+      <section className="lifeSection" id="life">
+        <div className="lifeHeading">
+          <div>
+            <span className="lifeNumber">03 · LIFE FLOW</span>
+            <p>한 시점이 아닌, 삶의 긴 호흡으로 보기</p>
+            <h2>{reading.profile.name}님의 <em>인생 전체 흐름</em></h2>
+          </div>
+          <p>태어난 순간의 기본 성향 위에 약 10년마다 바뀌는 ‘대운’을 겹쳐 읽었어요. 미래를 확정하는 예언이 아니라, 시기마다 더 잘 쓰면 좋은 태도를 알려드려요.</p>
+        </div>
+
+        <div className="lifeHeroCard">
+          <div className="lifeKeyword">
+            <span>평생을 관통하는 한 줄</span>
+            <h3>“{reading.life.keyword}”</h3>
+            <p>{reading.life.summary}</p>
+          </div>
+          <div className="lifeMotif" aria-hidden="true"><i /><i /><i /><b>人生</b></div>
+        </div>
+
+        <div className="lifeCoreGrid">
+          {reading.life.coreCards.map((card, index) => (
+            <article key={card.label}>
+              <span>0{index + 1}</span>
+              <p>{card.label}</p>
+              <h3>{card.title}</h3>
+              <div>{card.body}</div>
+            </article>
+          ))}
+        </div>
+
+        {reading.life.available ? (
+          <>
+            <div className="lifeChartCard">
+              <div className="lifeChartHeading">
+                <div><span>10대부터 80대까지</span><h3>나이대별 흐름 지도</h3></div>
+                <div><b>{reading.life.startNote}</b><small>{reading.life.directionTerm}</small></div>
+              </div>
+              <div className="lifeChart" aria-label="나이대별 흐름 활용도 그래프">
+                {reading.life.timeline.map((period) => (
+                  <div key={period.decade}>
+                    <b>{period.score}</b>
+                    <div><i style={{ height: `${period.score}%` }} /></div>
+                    <span>{period.decade}</span>
+                    <small>{period.band}</small>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="lifePeriodGrid">
+              {reading.life.timeline.map((period, index) => (
+                <article className="lifePeriodCard" key={period.decade}>
+                  <div className="lifePeriodTop">
+                    <span>{period.decade}</span>
+                    <div><small>{period.ages}</small><b>{period.band}</b></div>
+                    <i>{period.score}</i>
+                  </div>
+                  <h3>{period.headline}</h3>
+                  <p>{period.body}</p>
+                  <dl>
+                    <div><dt>이 시기에 키울 것</dt><dd>{period.focus}</dd></div>
+                    <div><dt>조금 덜어낼 것</dt><dd>{period.care}</dd></div>
+                  </dl>
+                  <div className="traditionalFlow">
+                    <span>실제 대운 구간</span>
+                    {period.traditional.map((flow) => <b key={flow}>{flow}</b>)}
+                  </div>
+                  {index === 0 && <small className="termHelp">한 나이대 안에서 대운이 바뀌면 두 구간을 함께 표시해요.</small>}
+                </article>
+              ))}
+            </div>
+          </>
+        ) : (
+          <div className="lifeUnavailable">
+            <span>!</span>
+            <div><h3>인생 흐름을 정확히 계산하려면 성별 선택이 필요해요</h3><p>{reading.life.notice}</p></div>
+            <a href="#today">사주 정보로 돌아가기 ↑</a>
+          </div>
+        )}
+        {reading.life.available && <p className="lifeDisclaimer"><span>읽는 법</span>{reading.life.notice} 같은 10대 안에서도 대운이 바뀌는 시점은 실제 구간으로 나누어 표시했습니다.</p>}
+      </section>
+
       <section className="detailSection" id="details">
         <div className="detailHeading">
-          <div><span>03</span><p>오늘의 운세 자세히</p><h2>좋고 나쁨보다, <em>어떻게 쓸지</em></h2></div>
+          <div><span>04</span><p>오늘의 운세 자세히</p><h2>좋고 나쁨보다, <em>어떻게 쓸지</em></h2></div>
           <p>점수가 낮은 항목은 나쁜 미래를 뜻하지 않아요. 오늘 조금 더 천천히 살피면 좋은 영역을 표시합니다.</p>
         </div>
         <div className="categoryGrid">
@@ -373,7 +458,7 @@ export default function Home() {
 
       <section className="sourcesSection" id="sources">
         <div className="sourcesHeading">
-          <div><span>04</span><p>해석의 뿌리</p><h2>네 권의 고전, <em>서로 다른 역할</em></h2></div>
+          <div><span>05</span><p>해석의 뿌리</p><h2>네 권의 고전, <em>서로 다른 역할</em></h2></div>
           <div className="principle"><b>쉬운 말로 바꾸는 원칙</b><p>먼저 타고난 기본 모습과 계절의 영향을 살피고, 내 힘의 균형과 오늘 생기기 쉬운 변화를 차례로 읽습니다. 전문 용어는 생활 속 뜻으로 풀되, 고전마다 기준이 다른 부분은 확정적인 예언처럼 말하지 않습니다.</p></div>
         </div>
         <div className="bookGrid">
@@ -391,7 +476,7 @@ export default function Home() {
           ))}
         </div>
         <div className="methodStrip">
-          <p><b>풀이 순서</b> 태어난 날짜와 시간 → 타고난 기본 모습 → 다섯 성향의 균형 → 오늘 두드러지는 주제와 변화 → 5개 생활 영역</p>
+          <p><b>풀이 순서</b> 태어난 날짜와 시간 → 타고난 기본 모습 → 다섯 성향의 균형 → 10년 대운과 인생 흐름 → 오늘의 변화 → 5개 생활 영역</p>
           <a href="https://github.com/6tail/lunar-typescript" target="_blank" rel="noreferrer">역법 계산 근거 ↗</a>
         </div>
       </section>
