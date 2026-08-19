@@ -106,6 +106,10 @@ h1 em::after { content: ""; height: 9px; background: #d9c995; opacity: .55; posi
 .keyword p { margin: 0 0 5px; color: var(--red); font-size: 10px; font-weight: 800; letter-spacing: .09em; }
 .keyword h2 { margin: 0; font-family: "Iropke Batang", "Noto Serif KR", serif; font-size: clamp(20px, 2.3vw, 27px); font-weight: 600; line-height: 1.42; letter-spacing: -.04em; }
 .summary { min-height: 45px; color: #5e6964; line-height: 1.72; font-size: 12px; padding: 0 0 20px; margin-bottom: 20px; border-bottom: 1px solid var(--line); }
+.plainLanguageNote { display: flex; align-items: center; gap: 13px; margin: -7px 0 20px; padding: 11px 13px; background: #eef1eb; border-left: 2px solid var(--sage); }
+.plainLanguageNote > b { flex: none; color: var(--sage-dark); font-size: 9px; }
+.plainLanguageNote p { margin: 0; color: #69736e; font-size: 9px; line-height: 1.55; }
+.plainLanguageNote strong { color: #394940; }
 .overviewGrid { display: grid; grid-template-columns: 1.15fr .85fr; gap: 16px; }
 .balancePanel, .fivePanel { min-width: 0; }
 .fivePanel { border-left: 1px solid #e2ddd2; padding-left: 16px; }
@@ -125,12 +129,14 @@ h1 em::after { content: ""; height: 9px; background: #d9c995; opacity: .55; posi
 .miniScores b { color: #4d5953; text-align: right; }
 .miniScores div > div { height: 4px; background: #e6e2d8; border-radius: 10px; overflow: hidden; }
 .miniScores i { display: block; height: 100%; border-radius: 10px; background: var(--sage); }
-.elementBars { height: 104px; display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; align-items: end; }
-.element { height: 100%; display: grid; grid-template-rows: 17px 1fr 15px; align-items: end; text-align: center; }
+.elementBars { height: 112px; display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; align-items: end; }
+.element { height: 100%; display: grid; grid-template-rows: 17px 1fr 25px; align-items: end; text-align: center; }
 .element b { color: #747e79; font-size: 8px; font-weight: 600; }
 .element > div { height: 68px; background: #ece9e1; display: flex; align-items: end; justify-content: center; overflow: hidden; }
 .element i { width: 100%; min-height: 7px; display: block; opacity: .88; }
-.element span { font-family: "Noto Serif KR", serif; color: #555f5a; font-size: 10px; }
+.element span { display: flex; flex-direction: column; font-family: "Noto Serif KR", serif; color: #555f5a; font-size: 9px; line-height: 1.2; }
+.element span small { color: #9a9f9c; font-family: sans-serif; font-size: 7px; }
+.elementHelp { margin: 5px 0 0; color: #8a928e; font-size: 8px; line-height: 1.4; }
 .energyNotes { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 17px; }
 .energyNotes > div { border: 1px solid #e2ddd2; background: #faf8f2; padding: 11px 13px; display: flex; gap: 9px; }
 .energyNotes p { margin: 0; color: var(--muted); font-size: 9px; line-height: 1.55; }
@@ -148,6 +154,7 @@ h1 em::after { content: ""; height: 9px; background: #d9c995; opacity: .55; posi
 .pillar { text-align: center; border-right: 1px solid #e3ded3; display: grid; justify-items: center; padding: 0 10px; }
 .pillar:last-child { border: 0; }
 .pillar > span { color: #8b938f; font-size: 9px; margin-bottom: 12px; }
+.pillar > span small { display: block; margin-top: 2px; color: #afb4b1; font-size: 7px; font-weight: 500; }
 .pillar > b { width: 45px; height: 45px; display: grid; place-items: center; font-family: "Noto Serif KR", serif; font-size: 25px; font-weight: 500; }
 .pillar > i { color: #858e89; font-size: 8px; font-style: normal; margin-bottom: 1px; }
 .pillar > small { margin-top: 11px; padding: 3px 8px; background: #eeeae1; color: #66716c; font-size: 8px; }
@@ -165,6 +172,10 @@ h1 em::after { content: ""; height: 9px; background: #d9c995; opacity: .55; posi
 .dayMasterNote dt { color: #8b938f; font-size: 8px; }
 .dayMasterNote dd { margin: 4px 0 0; color: #4f5b55; font-size: 10px; font-weight: 700; }
 .calculationNote { margin: 10px 0 0; text-align: right; color: #8c938f; font-size: 9px; }
+.technicalDetails { margin-top: 11px; border-top: 1px solid #ded8cb; color: #737c77; font-size: 9px; }
+.technicalDetails summary { width: fit-content; margin-left: auto; padding: 9px 0 0; color: var(--sage-dark); cursor: pointer; font-weight: 700; }
+.technicalDetails p { margin: 8px 0 0; padding: 11px 13px; background: rgba(255,253,248,.65); line-height: 1.65; }
+.technicalDetails p + p { margin-top: 0; padding-top: 0; }
 
 .detailSection { background: #213b32; color: #f4f0e7; padding: 84px max(30px, calc((100vw - 1180px) / 2)) 92px; position: relative; }
 .detailSection::before { content: "五行"; position: absolute; right: 4%; top: 22px; color: rgba(255,255,255,.035); font-family: serif; font-size: 150px; }
@@ -223,6 +234,7 @@ h1 em::after { content: ""; height: 9px; background: #d9c995; opacity: .55; posi
 .bookCard h3 { margin: 0 0 6px; font-family: "Noto Serif KR", serif; font-size: 20px; font-weight: 600; }
 .bookCard small { min-height: 31px; color: #8a918d; font-size: 8px; line-height: 1.5; }
 .bookCard > i { width: fit-content; margin: 16px 0 11px; padding: 4px 7px; background: #e4eae5; color: var(--sage-dark); font-style: normal; font-size: 8px; font-weight: 800; }
+.bookTerm { margin: -5px 0 10px; color: #9b7a70; font-size: 7px; font-weight: 700; }
 .bookNote { color: #626d67; font-size: 10px; line-height: 1.7; }
 .bookCard > b { margin-top: auto; color: #65736c; font-size: 8px; letter-spacing: .05em; }
 .methodStrip { display: flex; justify-content: space-between; align-items: center; gap: 20px; margin-top: 13px; padding: 15px 18px; background: #e5e9e3; color: #68736d; }

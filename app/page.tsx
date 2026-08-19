@@ -18,8 +18,9 @@ const sourceBooks = [
     title: "자평진전",
     original: "子平眞詮",
     author: "청 · 심효첨 원저 / 서락오 평주",
-    role: "월령과 격국",
-    note: "사주의 중심축을 월령에서 잡고, 일간과 구조의 관계를 읽는 기준으로 사용합니다.",
+    role: "태어난 계절과 기본 구조",
+    term: "명리 기준: 월령·격국",
+    note: "태어난 계절을 먼저 살피고, 내 성향과 주변 환경이 어떤 관계를 이루는지 읽는 기준으로 사용합니다.",
     href: "https://ci.nii.ac.jp/ncid/BA59778911",
   },
   {
@@ -27,8 +28,9 @@ const sourceBooks = [
     title: "적천수",
     original: "滴天髓",
     author: "전승본 / 임철초 주해 · 서락오 교정본 참조",
-    role: "강약과 기의 흐름",
-    note: "오행을 개수로만 단정하지 않고 계절, 생극, 흐름을 함께 보는 원칙을 취합니다.",
+    role: "내 힘과 주변 영향의 균형",
+    term: "명리 기준: 강약·생극",
+    note: "다섯 성향을 단순히 개수로만 판단하지 않고, 계절과 서로 돕거나 누르는 관계를 함께 살핍니다.",
     href: "https://ctext.org/wiki.pl?chapter=530386&if=gb&remap=gb",
   },
   {
@@ -36,8 +38,9 @@ const sourceBooks = [
     title: "궁통보감",
     original: "窮通寶鑑",
     author: "청 · 여춘대 편 / 서락오 평주",
-    role: "계절과 조후",
-    note: "태어난 달의 한난조습을 살펴 필요한 기운을 보정하는 보조 기준으로 사용합니다.",
+    role: "계절에 따라 필요한 보완",
+    term: "명리 기준: 조후·한난조습",
+    note: "춥고 덥거나 메마르고 습한 계절적 특징을 살펴, 어떤 성향을 보완하면 좋을지 판단합니다.",
     href: "https://ndlsearch.ndl.go.jp/books/R100000136-I1970304959960755998",
   },
   {
@@ -45,8 +48,9 @@ const sourceBooks = [
     title: "삼명통회",
     original: "三命通會",
     author: "명 · 만민영",
-    role: "합충과 일진",
-    note: "방대한 고법 가운데 합·충·형과 일진 관련 항목만 보조 신호로 제한해 적용합니다.",
+    role: "오늘 사람·일과 만나는 방식",
+    term: "명리 기준: 합·충·형·일진",
+    note: "전통 규칙 가운데 잘 맞물림, 부딪힘, 반복되는 긴장과 오늘 날짜의 특징만 보조 신호로 사용합니다.",
     href: "https://ctext.org/wiki.pl?if=gb&remap=gb&res=758991",
   },
 ];
@@ -88,9 +92,9 @@ export default function Home() {
 
       <section className="hero" id="top">
         <div className="heroCopy">
-          <div className="eyebrow"><span /> 오늘의 기운을 읽는 작은 의식</div>
+          <div className="eyebrow"><span /> 오늘의 흐름을 읽는 작은 의식</div>
           <h1>나의 사주로 읽는<br /><em>오늘의 흐름</em></h1>
-          <p>생년월일시와 오늘의 일진을 함께 살펴, 지금 힘을 줄 곳과 가볍게 지나갈 곳을 한눈에 정리해 드려요.</p>
+          <p>태어난 해·달·날·시간과 오늘 날짜의 흐름을 함께 살펴, 지금 힘을 줄 곳과 가볍게 지나갈 곳을 쉬운 말로 정리해 드려요.</p>
         </div>
         <div className="heroStamp" aria-hidden="true">
           <span>甲 乙 丙 丁 戊</span>
@@ -104,7 +108,7 @@ export default function Home() {
             <span className="step">01</span>
             <div>
               <h2>사주 정보</h2>
-              <p>절기 기준으로 네 기둥을 세웁니다.</p>
+              <p>태어난 해·달·날·시간을 전통 달력 기준으로 계산해요.</p>
             </div>
           </div>
 
@@ -150,7 +154,7 @@ export default function Home() {
 
         <article className="resultCard" ref={reportRef}>
           <div className="resultTopline">
-            <div className="dateLine"><span>{reading.dateLabel}</span><i />{reading.dayPillars}</div>
+            <div className="dateLine"><span>{reading.dateLabel}</span><i />전통 달력으로 {reading.dayPillars}</div>
             <div className="dateNavigator" aria-label="풀이 날짜 선택">
               <button type="button" aria-label="전날" onClick={() => setTargetDate((date) => moveDate(date, -1))}>‹</button>
               <input type="date" aria-label="풀이 날짜" value={targetDate} onChange={(event) => setTargetDate(event.target.value)} />
@@ -167,13 +171,17 @@ export default function Home() {
             </div>
           </div>
           <p className="summary">{reading.summary}</p>
+          <div className="plainLanguageNote">
+            <b>‘기운’이라는 말, 이렇게 읽어주세요</b>
+            <p>이 화면에서는 오늘 나타나기 쉬운 <strong>생각·감정·행동의 경향</strong>을 뜻해요. 좋고 나쁜 운명을 단정하는 말이 아닙니다.</p>
+          </div>
 
           <div className="overviewGrid">
             <div className="balancePanel">
-              <div className="sectionTitle"><h3>오늘의 기운</h3><span>{reading.confidence}</span></div>
+              <div className="sectionTitle"><h3>오늘 나와 잘 맞는 정도</h3><span>{reading.confidence}</span></div>
               <div className="balanceBody">
                 <div className="ring" style={{ background: `conic-gradient(#315d4d ${reading.balanceScore * 3.6}deg, #e7e3d9 0deg)` }}>
-                  <div><b>{reading.balanceScore}</b><span>균형 지수</span></div>
+                  <div><b>{reading.balanceScore}</b><span>오늘과의 조화</span></div>
                 </div>
                 <div className="miniScores">
                   {reading.categories.map((category) => (
@@ -188,22 +196,23 @@ export default function Home() {
             </div>
 
             <div className="fivePanel">
-              <div className="sectionTitle"><h3>나의 오행 분포</h3><span>{reading.dayMaster.gan} {reading.dayMaster.element} 일간</span></div>
+              <div className="sectionTitle"><h3>나를 이루는 다섯 성향</h3><span>명리학에서는 ‘오행’이라고 불러요</span></div>
               <div className="elementBars">
                 {reading.elementBalance.map((element) => (
                   <div className="element" key={element.name}>
                     <b>{element.value}%</b>
                     <div><i style={{ height: `${Math.max(element.value * 2.6, 12)}px`, background: element.color }} /></div>
-                    <span>{element.name}</span>
+                    <span>{element.plainLabel}<small>{element.name}</small></span>
                   </div>
                 ))}
               </div>
+              <p className="elementHelp">막대가 길수록 그 성향을 평소 더 자주 쓰는 편이에요. 시작·표현·안정·정리·유연은 오행의 전통적 상징을 생활 언어로 옮긴 이름입니다.</p>
             </div>
           </div>
 
           <div className="energyNotes">
-            <div><span className="dot good" /><p><b>돋우면 좋은 기운</b>{reading.favorableText}</p></div>
-            <div><span className="dot caution" /><p><b>한 번 더 살필 것</b>{reading.cautionText}</p></div>
+            <div><span className="dot good" /><p><b>오늘 더 써보면 좋은 태도</b>{reading.favorableText}</p></div>
+            <div><span className="dot caution" /><p><b>오늘 지나치기 쉬운 모습</b>{reading.cautionText}</p></div>
           </div>
         </article>
       </section>
@@ -211,13 +220,13 @@ export default function Home() {
       <section className="pillarsSection">
         <div className="sectionIntro">
           <span className="step">02</span>
-          <div><p>나를 읽는 네 기둥</p><h2>{reading.profile.name}님의 사주 원국</h2></div>
+          <div><p>태어난 순간을 네 부분으로 나누어 보기</p><h2>{reading.profile.name}님의 타고난 기본 모습</h2></div>
         </div>
         <div className="pillarsWrap">
           <div className="pillarsTable">
             {reading.pillars.map((pillar, index) => (
               <div className={`pillar ${index === 2 ? "dayPillar" : ""}`} key={pillar.label}>
-                <span>{pillar.label}</span>
+                <span>{pillar.label}<small>{pillar.term}</small></span>
                 <b>{pillar.known ? pillar.ganZhi[0] : "?"}</b>
                 <i>{pillar.known ? pillar.ganElement : "—"}</i>
                 <b>{pillar.known ? pillar.ganZhi[1] : "?"}</b>
@@ -227,16 +236,22 @@ export default function Home() {
             ))}
           </div>
           <div className="dayMasterNote">
-            <span>日干</span>
-            <div><p>나를 나타내는 중심</p><h3>{reading.dayMaster.gan} · {reading.dayMaster.element} 일간</h3></div>
+            <span>나</span>
+            <div><p>내가 세상을 대하는 기본 방식</p><h3>{reading.dayMaster.plainMeaning}</h3></div>
             <dl>
-              <div><dt>세력</dt><dd>{reading.dayMaster.label} {reading.dayMaster.ratio}%</dd></div>
-              <div><dt>오늘 십성</dt><dd>{reading.tenGod}</dd></div>
-              <div><dt>일지 관계</dt><dd>{reading.relationLabel}</dd></div>
+              <div><dt>타고난 힘의 균형</dt><dd>{reading.dayMaster.label}</dd></div>
+              <div><dt>오늘 두드러지는 주제</dt><dd>{reading.tenGodPlain}</dd></div>
+              <div><dt>사람·일과의 흐름</dt><dd>{reading.relationLabel}</dd></div>
             </dl>
           </div>
         </div>
-        <p className="calculationNote">연·월주는 입춘과 절기 교접 시각을 기준으로 계산하고, 야자시는 당일 일주로 보는 2파 기준을 적용했습니다.</p>
+        <p className="calculationNote">달력의 숫자만 쓰지 않고 계절이 실제로 바뀌는 시각까지 반영해 계산했습니다.</p>
+        <details className="technicalDetails">
+          <summary>전문 명리 용어와 계산 기준 확인하기</summary>
+          <p>사주 원국: {reading.pillars.map((pillar) => pillar.ganZhi).join(" · ")} / 일간: {reading.dayMaster.gan}{reading.dayMaster.element} / 세력: {reading.dayMaster.term} {reading.dayMaster.ratio}% / 오늘 십성: {reading.tenGod} / {reading.relationLabel}</p>
+          <p>연주와 월주는 입춘·절기 교접 시각을 기준으로 하며, 야자시는 당일 일주로 보는 2파 기준을 적용했습니다.</p>
+          <p>다섯 성향의 비율은 천간·지지의 대표 오행에 태어난 달의 계절 가중치를 더한 비교값입니다. 숨은 천간까지 모두 세는 정밀 감정과는 범위가 다릅니다.</p>
+        </details>
       </section>
 
       <section className="detailSection" id="details">
@@ -266,15 +281,15 @@ export default function Home() {
         <div className="guideGrid">
           <div><span>吉時</span><p>집중이 잘 맞는 시간</p><b>{reading.goodHours.join(" · ")}</b></div>
           <div><span>緩時</span><p>속도를 늦출 시간</p><b>{reading.cautionHours.join(" · ")}</b></div>
-          <div><span>色</span><p>균형을 돕는 색</p><b>{reading.luckyColor}</b></div>
-          <div><span>方</span><p>기운을 환기할 방향</p><b>{reading.luckyDirection}</b></div>
+          <div><span>色</span><p>오늘 보완할 성향을 떠올리는 색</p><b>{reading.luckyColor}</b></div>
+          <div><span>方</span><p>잠시 움직이며 분위기를 바꿔볼 방향</p><b>{reading.luckyDirection}</b></div>
         </div>
       </section>
 
       <section className="sourcesSection" id="sources">
         <div className="sourcesHeading">
           <div><span>04</span><p>해석의 뿌리</p><h2>네 권의 고전, <em>서로 다른 역할</em></h2></div>
-          <div className="principle"><b>원칙</b><p>여러 유파의 단문을 무작위로 섞지 않습니다. 원국 → 계절 → 강약 → 오늘의 합충 순서로 읽고, 고전끼리 기준이 다른 부분은 하나의 확정적 예언으로 단정하지 않습니다.</p></div>
+          <div className="principle"><b>쉬운 말로 바꾸는 원칙</b><p>먼저 타고난 기본 모습과 계절의 영향을 살피고, 내 힘의 균형과 오늘 생기기 쉬운 변화를 차례로 읽습니다. 전문 용어는 생활 속 뜻으로 풀되, 고전마다 기준이 다른 부분은 확정적인 예언처럼 말하지 않습니다.</p></div>
         </div>
         <div className="bookGrid">
           {sourceBooks.map((book) => (
@@ -284,13 +299,14 @@ export default function Home() {
               <h3>{book.title}</h3>
               <small>{book.author}</small>
               <i>{book.role}</i>
+              <span className="bookTerm">{book.term}</span>
               <span className="bookNote">{book.note}</span>
               <b>원문·서지 보기 ↗</b>
             </a>
           ))}
         </div>
         <div className="methodStrip">
-          <p><b>계산</b> 양력 입력 → 절기 기준 사주팔자 → 일간 강약과 오행 균형 → 오늘의 천간 십성·지지 합충 → 5개 생활 영역</p>
+          <p><b>풀이 순서</b> 태어난 날짜와 시간 → 타고난 기본 모습 → 다섯 성향의 균형 → 오늘 두드러지는 주제와 변화 → 5개 생활 영역</p>
           <a href="https://github.com/6tail/lunar-typescript" target="_blank" rel="noreferrer">역법 계산 근거 ↗</a>
         </div>
       </section>
