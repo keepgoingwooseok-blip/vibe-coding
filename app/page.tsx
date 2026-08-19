@@ -372,6 +372,41 @@ export default function Home() {
           ))}
         </div>
 
+        <article className="lifeEssay" aria-labelledby="life-essay-title">
+          <div className="lifeEssayHeading">
+            <div>
+              <span>DEEP READING</span>
+              <h3 id="life-essay-title">{reading.profile.name}님의 정밀 인생 사주</h3>
+              <p>{reading.life.available ? `계산에서 읽을 수 있는 내용이 충분해 A4 약 ${Math.max(2, Math.ceil(reading.life.reportCharacters / 1800))}장 분량으로 풀었어요.` : "현재 입력으로 확인할 수 있는 범위만 적었어요. 성별을 선택하면 대운과 인생 단계까지 더 자세해져요."}</p>
+            </div>
+            <div className="reportActions">
+              <span>약 {Math.max(5, Math.ceil(reading.life.reportCharacters / 500))}분</span>
+              <button type="button" onClick={() => window.print()}>인쇄·PDF 저장</button>
+            </div>
+          </div>
+          <div className="reportBasis"><b>이 풀이에 실제로 반영한 기준</b><span>{reading.life.reportBasis}</span></div>
+          <div className="lifeEssayBody">
+            {reading.life.detailedSections.map((section) => (
+              <section className="essayChapter" key={section.number}>
+                <header>
+                  <span>{section.number}</span>
+                  <div><small>{section.kicker}</small><h4>{section.title}</h4></div>
+                </header>
+                <div className="essayText">
+                  {section.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+                </div>
+                <ul>
+                  {section.points.map((point) => <li key={point}>{point}</li>)}
+                </ul>
+              </section>
+            ))}
+          </div>
+          <div className="essayFooter">
+            <b>온담의 해석 원칙</b>
+            <p>분량을 채우기 위한 사건 예측은 넣지 않았습니다. 태어난 사주와 대운에서 반복해서 확인되는 성향만 쉬운 말로 옮겼으며, 중요한 의료·법률·재무 결정은 해당 분야 전문가의 판단을 우선하세요.</p>
+          </div>
+        </article>
+
         {reading.life.available ? (
           <>
             <div className="lifeChartCard">

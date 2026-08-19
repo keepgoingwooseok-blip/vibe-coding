@@ -47,6 +47,14 @@ export type LifePeriod = {
   traditional: string[];
 };
 
+export type LifeEssaySection = {
+  number: string;
+  kicker: string;
+  title: string;
+  paragraphs: string[];
+  points: string[];
+};
+
 export type SajuReading = {
   profile: Profile;
   targetDate: string;
@@ -78,6 +86,9 @@ export type SajuReading = {
     startNote: string;
     directionTerm: string;
     coreCards: Array<{ label: string; title: string; body: string }>;
+    detailedSections: LifeEssaySection[];
+    reportCharacters: number;
+    reportBasis: string;
     timeline: LifePeriod[];
     notice: string;
   };
@@ -90,6 +101,39 @@ const ELEMENT_META: Record<ElementName, { color: string; colorName: string; dire
   토: { color: "#b9955f", colorName: "황토빛", direction: "가운데", plainLabel: "안정", plainText: "흐트러진 일을 안정시키고 꾸준히 이어가는 힘", excessText: "안전을 지키려다 변화를 미루거나 걱정을 오래 품을 수 있어요." },
   금: { color: "#8b8d87", colorName: "은백색", direction: "서쪽", plainLabel: "정리", plainText: "기준을 세우고 필요한 것과 아닌 것을 가르는 힘", excessText: "옳고 그름을 너무 엄격하게 따지거나 자신과 남에게 날카로워질 수 있어요." },
   수: { color: "#547a8c", colorName: "쪽빛", direction: "북쪽", plainLabel: "유연", plainText: "상황을 살피고 생각을 유연하게 바꾸는 힘", excessText: "생각과 감정이 한곳에 오래 머물러 결정을 미루기 쉬워요." },
+};
+
+const ELEMENT_LIFE_DETAIL: Record<ElementName, { instinct: string; talent: string; relationship: string; growth: string }> = {
+  목: {
+    instinct: "가능성을 발견하면 먼저 움직이고, 아직 완성되지 않은 일도 시간을 들여 키워내려는 성향이 있습니다. 정해진 답을 반복하기보다 더 나은 방향을 찾을 때 생기가 살아납니다.",
+    talent: "처음 길을 만들거나 사람과 일을 성장시키는 역할에서 강점이 드러납니다. 기획, 교육, 육성, 새로운 프로젝트처럼 오늘의 수고가 미래의 변화로 이어지는 일과 잘 맞습니다.",
+    relationship: "가까운 사람에게도 함께 나아갈 방향을 제안하는 편입니다. 다만 상대가 아직 준비되지 않았을 때는 좋은 뜻이 재촉이나 간섭으로 들릴 수 있습니다.",
+    growth: "시작한 일을 끝까지 다듬는 힘과 다른 사람의 속도를 기다리는 여유가 더해질수록 타고난 성장력이 오래 갑니다.",
+  },
+  화: {
+    instinct: "느낀 것과 생각한 것을 밖으로 표현하며 주변의 온도를 바꾸는 성향이 있습니다. 반응이 빠르고 분위기를 움직이는 힘이 있어, 가만히 있기보다 직접 참여할 때 존재감이 살아납니다.",
+    talent: "사람의 관심을 모으고 복잡한 내용을 생생하게 전달하는 일에서 강점이 드러납니다. 발표, 설득, 창작, 서비스처럼 나의 표현이 누군가의 행동을 이끄는 일과 잘 맞습니다.",
+    relationship: "마음이 움직이면 표현도 빠른 편이라 관계에 온기를 더합니다. 다만 감정의 온도가 높은 순간에는 결론까지 너무 빨리 내리지 않는 것이 중요합니다.",
+    growth: "빛을 오래 유지하려면 쉬는 시간과 감정의 간격이 필요합니다. 즉각적인 반응보다 한 번 정리한 표현을 선택할수록 영향력이 깊어집니다.",
+  },
+  토: {
+    instinct: "흩어진 것을 모아 안정시키고, 쉽게 무너지지 않는 기반을 만들려는 성향이 있습니다. 급격한 변화보다 충분히 확인한 뒤 움직일 때 마음이 편안합니다.",
+    talent: "사람과 자원을 연결하고 꾸준히 운영하는 일에서 강점이 드러납니다. 관리, 조정, 돌봄, 장기 프로젝트처럼 신뢰와 지속성이 중요한 역할과 잘 맞습니다.",
+    relationship: "한 번 인연을 맺으면 쉽게 놓지 않고 책임을 지려는 편입니다. 다만 모든 짐을 내 몫처럼 품으면 배려가 부담으로 바뀔 수 있습니다.",
+    growth: "안정을 지키는 것과 변화를 미루는 것은 다릅니다. 작은 실험을 허용하고 걱정을 구체적인 일정으로 바꿀수록 든든함이 강점이 됩니다.",
+  },
+  금: {
+    instinct: "상황의 핵심을 빠르게 가르고 기준을 세우려는 성향이 있습니다. 무엇이 필요한지, 어디까지가 내 책임인지 선명해질 때 집중력이 높아집니다.",
+    talent: "복잡한 것을 정리하고 품질을 높이는 일에서 강점이 드러납니다. 분석, 편집, 설계, 판단처럼 정확한 기준과 완성도가 중요한 역할과 잘 맞습니다.",
+    relationship: "말보다 책임과 행동으로 신뢰를 보여주는 편입니다. 다만 정확함을 중시하는 마음이 상대에게는 평가나 차가움으로 느껴질 수 있습니다.",
+    growth: "옳고 그름 사이에 사람의 사정이 들어올 자리를 남겨두는 것이 중요합니다. 기준에 유연함이 더해질수록 날카로움이 지혜가 됩니다.",
+  },
+  수: {
+    instinct: "상황을 오래 관찰하고 여러 가능성을 연결하며 움직이는 성향이 있습니다. 겉으로는 조용해 보여도 머릿속에서는 정보와 감정이 끊임없이 흐릅니다.",
+    talent: "변화를 읽고 보이지 않는 맥락을 찾아내는 일에서 강점이 드러납니다. 연구, 상담, 전략, 콘텐츠처럼 깊이 생각하고 연결하는 역할과 잘 맞습니다.",
+    relationship: "상대의 말 뒤에 있는 분위기까지 살피는 편이라 공감이 섬세합니다. 다만 마음속 생각을 오래 묵히면 상대는 무엇을 원하는지 알기 어렵습니다.",
+    growth: "생각이 충분해지는 순간을 기다리기보다 작은 결정을 먼저 행동으로 옮기는 연습이 필요합니다. 흐름에 방향이 생길 때 유연함이 큰 힘이 됩니다.",
+  },
 };
 
 const GAN_ELEMENT: Record<string, ElementName> = {
@@ -266,6 +310,40 @@ function lifeRelationText(value: string) {
   if (value === "충") return "환경이나 역할을 바꾸고 싶은 마음이 커질 수 있어요. 변화 자체보다 방향을 먼저 정하는 것이 중요해요.";
   if (value === "형") return "같은 고민을 반복하기 쉬운 때라, 익숙한 방식 밖의 조언을 받아들이면 막힘이 풀려요.";
   return "큰 충돌을 만들기보다 꾸준히 쌓고 조율하는 쪽에서 힘이 생겨요.";
+}
+
+function careerEssay(value: string) {
+  if (value === "비견" || value === "겁재") return {
+    title: "내 방식과 협업의 균형에서 커지는 일복",
+    body: "사회생활에서는 스스로 판단할 수 있는 여지와 동료와 나란히 실력을 겨룰 환경이 중요합니다. 지나치게 세세한 통제를 받으면 의욕이 떨어질 수 있지만, 목표와 역할이 분명한 팀에서는 주도성과 실행력이 살아납니다. 직업 이름 하나보다 ‘내 몫이 선명하고 성과를 직접 확인할 수 있는 구조’가 잘 맞습니다.",
+    advice: "경쟁자를 이겨야 할 사람으로만 보지 말고 내 기준을 다듬게 하는 거울로 활용해 보세요. 혼자 결정할 부분과 도움을 받을 부분을 미리 나누면 사람 때문에 힘이 새는 일을 줄일 수 있습니다.",
+  };
+  if (value === "식신" || value === "상관") return {
+    title: "표현과 결과물이 곧 경력이 되는 사람",
+    body: "사회생활에서는 머릿속 생각을 보이는 결과로 바꾸는 능력이 중요합니다. 말, 글, 기획, 기술, 서비스처럼 내가 만든 것이 다른 사람에게 전달될 때 성취감이 커집니다. 규칙만 반복하는 자리보다 개선할 여지가 있고 의견을 낼 수 있는 환경에서 실력이 빠르게 드러나는 편입니다.",
+    advice: "좋은 아이디어가 많을수록 마감과 전달 방식을 함께 정해야 합니다. 솔직함을 그대로 쏟기보다 상대가 받아들일 순서로 정리하면 재능이 반발이 아닌 영향력으로 바뀝니다.",
+  };
+  if (value === "편재" || value === "정재") return {
+    title: "현실 감각과 관리 능력이 성과로 이어지는 사람",
+    body: "사회생활에서는 시간, 돈, 사람, 물건처럼 한정된 자원을 효율적으로 배치하는 능력이 중요합니다. 추상적인 가능성보다 실제로 무엇이 남는지를 확인할 때 판단이 선명해집니다. 운영, 영업, 관리, 사업처럼 움직이는 상황 속에서 실속을 만들어내는 역할과 인연이 있습니다.",
+    advice: "성과가 보일수록 더 많은 일을 떠안기 쉬우니, 수익과 노력의 비율을 정기적으로 확인하세요. 눈앞의 기회를 잡는 능력만큼 장기적으로 지킬 기준을 세우는 것이 중요합니다.",
+  };
+  if (value === "칠살" || value === "정관") return {
+    title: "책임과 신뢰가 쌓일수록 자리가 커지는 사람",
+    body: "사회생활에서는 기준, 약속, 역할이 분명할수록 능력이 안정적으로 드러납니다. 처음에는 책임이 부담처럼 느껴져도 경험이 쌓이면 복잡한 상황을 정리하고 사람들에게 방향을 제시하는 힘으로 바뀔 수 있습니다. 조직, 전문직, 관리 역할처럼 신뢰가 누적되는 환경과 잘 맞습니다.",
+    advice: "모든 기대를 완벽하게 충족하려 하면 성취보다 압박이 먼저 커질 수 있습니다. 책임의 범위를 문장으로 정하고, 잘하는 것과 반드시 해야 하는 것을 구분하면 오래 가는 권위가 생깁니다.",
+  };
+  return {
+    title: "배움과 해석의 깊이가 경쟁력이 되는 사람",
+    body: "사회생활에서는 자료를 읽고 의미를 정리하거나, 다른 사람이 놓친 관점을 발견하는 능력이 중요합니다. 충분히 이해한 뒤 움직이려는 편이라 출발은 느려 보여도 한 번 익힌 분야에서는 깊이가 생깁니다. 연구, 교육, 상담, 기획처럼 지식과 통찰을 축적하는 역할과 잘 맞습니다.",
+    advice: "준비가 완벽해질 때까지 기다리면 기회를 늦게 잡을 수 있습니다. 배운 내용을 작은 결과물로 정리하고 주기적으로 밖에 보여주는 습관이 경력의 속도를 높입니다.",
+  };
+}
+
+function strengthEssay(ratio: number) {
+  if (ratio > 0.56) return "내 안에서 스스로 힘을 만들어내는 비율이 높은 편입니다. 주변의 반응이 없어도 결정을 밀고 갈 수 있다는 장점이 있지만, 이미 방향을 정한 뒤에는 다른 의견이 늦게 들어올 수 있습니다. 중요한 선택에서는 ‘내가 원하는가’와 함께 ‘지금 환경도 이를 받쳐주는가’를 확인하는 과정이 필요합니다.";
+  if (ratio < 0.43) return "주변 환경과 사람의 영향을 섬세하게 받아들이는 편입니다. 혼자 버티는 방식보다 믿을 만한 사람, 반복 가능한 생활, 충분한 준비가 갖춰졌을 때 잠재력이 안정적으로 나옵니다. 도움을 받는 것을 약함으로 보지 않고 내 힘을 오래 쓰기 위한 기반으로 이해하는 것이 중요합니다.";
+  return "내 의지와 주변 자극이 비교적 고르게 맞물리는 편입니다. 상황에 맞춰 앞에 나서거나 한 걸음 물러설 수 있다는 것이 장점입니다. 다만 선택지가 많을 때는 어느 쪽도 틀리지 않아 결정을 미룰 수 있으므로, 내게 가장 중요한 기준을 한 문장으로 정해두는 것이 도움이 됩니다.";
 }
 
 function band(score: number) {
@@ -456,6 +534,7 @@ export function createReading(profile: Profile, targetDate: string): SajuReading
   let lifeTimeline: LifePeriod[] = [];
   let lifeStartNote = "";
   let lifeDirectionTerm = "";
+  let lifeTransitions: Array<{ age: number; ganZhi: string; headline: string; focus: string }> = [];
 
   if (lifeAvailable) {
     const yun = eight.getYun(profile.gender === "male" ? 1 : 0, 2);
@@ -492,7 +571,154 @@ export function createReading(profile: Profile, targetDate: string): SajuReading
         traditional,
       };
     });
+
+    lifeTransitions = daYun
+      .filter((flow) => flow.getStartAge() >= 10 && flow.getStartAge() <= 89)
+      .map((flow) => {
+        const theme = lifeTheme(tenGod(dayGan, flow.getGanZhi()[0]));
+        return { age: flow.getStartAge(), ganZhi: flow.getGanZhi(), headline: theme.headline, focus: theme.focus };
+      });
   }
+
+  const weakestElement = [...ELEMENTS].sort((a, b) => counts[a] - counts[b])[0];
+  const monthElement = ZHI_ELEMENT[eight.getMonthZhi()];
+  const dayBranchElement = ZHI_ELEMENT[dayBranch];
+  const monthRole = tenGod(dayGan, eight.getMonthGan());
+  const career = careerEssay(monthRole);
+  const wealthElement = controls(dayElement);
+  const wealthShare = counts[wealthElement] / total;
+  const name = profile.name || "당신";
+
+  let natalCombineCount = 0;
+  let natalClashCount = 0;
+  let natalPunishCount = 0;
+  for (let left = 0; left < natalBranches.length; left += 1) {
+    for (let right = left + 1; right < natalBranches.length; right += 1) {
+      if (hasPair(COMBINES, natalBranches[left], natalBranches[right])) natalCombineCount += 1;
+      if (hasPair(CLASHES, natalBranches[left], natalBranches[right])) natalClashCount += 1;
+      if (hasPair(PUNISHES, natalBranches[left], natalBranches[right])) natalPunishCount += 1;
+    }
+  }
+
+  const seasonText = monthElement === dayElement || monthElement === producerOf(dayElement)
+    ? `태어난 계절의 ${ELEMENT_META[monthElement].plainLabel} 성향이 중심의 힘을 받쳐주는 편이라, 익숙한 분야에서는 스스로 속도를 만들기 쉽습니다. 힘이 충분할 때일수록 일을 더 벌이기보다 무엇을 끝낼지 정하는 선택이 중요합니다.`
+    : monthElement === generates(dayElement) || monthElement === controls(dayElement)
+      ? `태어난 계절은 내 힘을 밖으로 쓰게 만드는 ${ELEMENT_META[monthElement].plainLabel} 성향이 두드러집니다. 가만히 힘을 비축하기보다 실제 역할을 맡고 결과를 만들면서 성장하는 편이지만, 회복할 틈 없이 계속 책임지면 쉽게 지칠 수 있습니다.`
+      : `태어난 계절의 ${ELEMENT_META[monthElement].plainLabel} 성향은 내 중심에 일정한 긴장과 기준을 줍니다. 처음에는 환경의 요구가 부담으로 느껴질 수 있으나, 경험이 쌓이면 압박을 구조와 실력으로 바꾸는 힘이 생깁니다.`;
+
+  const moneyPattern = wealthShare >= 0.24
+    ? `사주에 돈과 자원을 뜻하는 성향이 비교적 선명합니다. 무엇을 얼마나 쓰고 남길지, 노력에 비해 결과가 적절한지를 현실적으로 살피는 감각이 있는 편입니다. 다만 돈의 흐름이 잘 보이는 사람일수록 가족이나 조직의 몫까지 관리하려 들 수 있으므로, 내 책임의 범위를 정하는 일이 필요합니다.`
+    : wealthShare <= 0.1
+      ? `사주에서 돈과 자원을 뜻하는 성향이 겉으로 강하게 드러나는 편은 아닙니다. 이것은 재물운이 없다는 뜻이 아니라, 돈 관리가 관심과 습관 없이 저절로 굴러가지는 않는다는 뜻에 가깝습니다. 자동 저축, 예산표, 계약 기록처럼 눈에 보이는 장치를 만들면 다른 재능이 실제 자산으로 남기 쉬워집니다.`
+      : `돈과 자원을 다루는 감각은 지나치게 강하거나 약하지 않은 편입니다. 필요할 때 현실적으로 계산할 수 있지만, 삶의 다른 가치가 중요해지면 재정 관리를 뒤로 미룰 수 있습니다. 큰 한 번을 기대하기보다 일정한 수입과 반복 지출을 함께 관리하는 방식이 잘 맞습니다.`;
+  const moneyBalance = favorable.includes(wealthElement)
+    ? `${ELEMENT_META[wealthElement].plainLabel}하는 힘은 삶의 균형에도 도움이 됩니다. 가격과 숫자를 확인하고 결과를 분명히 하는 습관이 단순한 절약을 넘어 자신감과 선택권을 키워줍니다.`
+    : `${ELEMENT_META[wealthElement].plainLabel}하는 힘을 너무 오래 쓰면 타고난 중심이 소모될 수 있습니다. 수익을 위해 무조건 더 많이 움직이기보다, 감당할 수 있는 범위와 쉬는 시간을 먼저 정한 뒤 기회를 선택하는 편이 오래 갑니다.`;
+
+  const relationPattern = natalClashCount > 0
+    ? `사주 안에 서로 다른 방향이 부딪히는 모습이 있어, 가까운 관계나 생활 환경에서 한 번씩 큰 조정이 필요할 수 있습니다. 갈등이 생긴다는 예언이 아니라, 익숙한 상태를 그대로 유지하기보다 솔직한 대화를 통해 관계의 방식을 바꿀 때 성장한다는 뜻에 가깝습니다.`
+    : natalCombineCount > 0
+      ? `사주 안에 서로 다른 성향이 맞물리는 모습이 있어, 좋은 인연이나 협업을 통해 혼자서는 만들기 어려운 결과를 얻는 편입니다. 다만 관계가 잘 이어질수록 상대의 기대까지 내 책임처럼 받아들이지 않도록 경계를 분명히 해야 합니다.`
+      : `관계에서 극단적인 밀고 당기기보다 시간을 두고 신뢰를 확인하는 편입니다. 처음부터 모든 마음을 보여주기보다 행동의 일관성을 보며 가까워지므로, 오래된 인연에서 안정감을 느끼기 쉽습니다.`;
+  const repeatPattern = natalPunishCount > 0
+    ? `또한 같은 생각이나 감정을 안에서 반복하기 쉬운 신호가 있어, 말하지 않고 혼자 정리하려는 시간이 길어질 수 있습니다. 결론이 나지 않을 때는 생각을 더 하는 것보다 상대에게 확인 질문을 건네는 편이 효과적입니다.`
+    : `감정이 복잡할 때에도 문제를 지나치게 오래 붙들기보다는 관계의 현실적인 답을 찾으려는 편입니다. 다만 괜찮은 척 넘어가기보다 필요한 말을 짧게라도 남기는 것이 중요합니다.`;
+
+  const makeStageSection = (number: string, kicker: string, title: string, periods: LifePeriod[]): LifeEssaySection => {
+    const strongest = [...periods].sort((a, b) => b.score - a.score)[0];
+    const gentlest = [...periods].sort((a, b) => a.score - b.score)[0];
+    const sequence = periods.map((period) => `${period.decade}에는 ‘${period.headline}’`).join(", 이어 ");
+    return {
+      number,
+      kicker,
+      title,
+      paragraphs: [
+        `${sequence}가 중심 주제로 들어옵니다. 나이가 바뀐다고 성격이 완전히 달라지는 것이 아니라, 같은 사람이 어떤 능력을 앞에 꺼내 쓰게 되는지가 달라진다고 이해하면 정확합니다. 이 시기의 공통 과제는 ${periods.map((period) => period.focus).join("에서 ")}로 이어집니다.`,
+        `특히 ${strongest.decade}는 흐름을 비교적 자연스럽게 활용하기 쉬운 구간입니다. 반대로 ${gentlest.decade}는 나쁜 시기가 아니라 속도와 방식을 조정해야 성과가 남는 구간이에요. ${gentlest.care}을 줄이고 ${strongest.focus}을 구체적인 일정으로 옮기면 큰 흐름을 내 편으로 쓰는 데 도움이 됩니다.`,
+      ],
+      points: periods.map((period) => `${period.decade} · ${period.band} · ${period.focus}`),
+    };
+  };
+
+  const detailedSections: LifeEssaySection[] = [
+    {
+      number: "01",
+      kicker: "타고난 기질과 내면",
+      title: `${ELEMENT_META[dayElement].plainLabel}하는 방식으로 세상을 만납니다`,
+      paragraphs: [
+        `${name}님의 사주에서 ‘나’를 나타내는 중심은 ${dayGan}${dayElement}입니다. 쉬운 말로 옮기면 ${ELEMENT_META[dayElement].plainText}이 삶을 움직이는 기본 방식이라는 뜻입니다. ${ELEMENT_LIFE_DETAIL[dayElement].instinct} ${ELEMENT_LIFE_DETAIL[dayElement].relationship}`,
+        `${strengthEssay(supportRatio)} ${seasonText} ${ELEMENT_LIFE_DETAIL[dayElement].growth}`,
+      ],
+      points: [`타고난 중심 · ${ELEMENT_META[dayElement].plainText}`, `내 힘의 비율 · ${Math.round(supportRatio * 100)}% · ${strengthLabel}`, `태어난 계절의 주제 · ${ELEMENT_META[monthElement].plainLabel}`],
+    },
+    {
+      number: "02",
+      kicker: "재능·직업·사회생활",
+      title: career.title,
+      paragraphs: [
+        `${name}님이 사회와 일을 대하는 자리에 가장 먼저 드러난 주제는 ‘${tenGodShort(monthRole)}’입니다. ${career.body} ${ELEMENT_LIFE_DETAIL[dayElement].talent}`,
+        `${career.advice} 직업을 고를 때는 이름이나 겉모습보다, 내가 ${ELEMENT_META[dayElement].plainText}을 실제로 사용할 수 있는지와 ${favorable.map((element) => ELEMENT_META[element].plainText).join("과 ")}을 더할 수 있는지를 확인하는 편이 좋습니다.`,
+      ],
+      points: [`사회에서 드러나는 주제 · ${tenGodShort(monthRole)}`, `강점이 되는 방식 · ${ELEMENT_META[dayElement].plainLabel} 후 ${ELEMENT_META[favorable[0]].plainLabel}`, `일 선택의 기준 · 자율성보다 지속 가능한 구조 확인`],
+    },
+    {
+      number: "03",
+      kicker: "재물과 생활 기반",
+      title: "버는 힘보다 남기는 구조가 재물운을 완성합니다",
+      paragraphs: [moneyPattern, `${moneyBalance} 재물 흐름을 볼 때는 수입의 크기만 보지 말고, 시간과 체력이 함께 남는지도 확인해야 합니다. 사주가 말하는 재물은 현금만이 아니라 내가 꾸준히 활용할 수 있는 기술, 신뢰, 관계, 생활 기반까지 포함합니다.`],
+      points: [`재물을 나타내는 성향 · ${ELEMENT_META[wealthElement].plainLabel}`, `표면에 드러난 비중 · 약 ${Math.round(wealthShare * 100)}%`, `실천 기준 · 수입·지출·시간을 같은 표에서 보기`],
+    },
+    {
+      number: "04",
+      kicker: "사랑과 인간관계",
+      title: `${ELEMENT_META[dayBranchElement].plainLabel}의 방식으로 가까운 사람을 대합니다`,
+      paragraphs: [
+        `겉으로 보이는 성향과 별개로, 아주 가까운 관계에서는 ${ELEMENT_META[dayBranchElement].plainText}을 중요하게 여깁니다. ${ELEMENT_LIFE_DETAIL[dayElement].relationship} 마음을 알아주기를 기다리기보다 원하는 것과 어려운 것을 한 문장으로 말할 때 관계의 오해가 크게 줄어듭니다.`,
+        `${relationPattern} ${repeatPattern} 관계운의 핵심은 좋은 사람을 기다리는 것보다, 내 속도와 상대의 속도가 다를 때 어떤 방식으로 조율할지를 배우는 데 있습니다.`,
+      ],
+      points: [`가까운 관계의 필요 · ${ELEMENT_META[dayBranchElement].plainText}`, `맞물림 ${natalCombineCount} · 부딪힘 ${natalClashCount} · 반복 긴장 ${natalPunishCount}`, `관계의 원칙 · 추측보다 확인 질문`],
+    },
+    {
+      number: "05",
+      kicker: "몸과 마음의 생활 리듬",
+      title: `${ELEMENT_META[dominantElement].plainLabel}은 덜어내고 ${ELEMENT_META[weakestElement].plainLabel}은 생활 속에서 보충하세요`,
+      paragraphs: [
+        `다섯 성향 가운데 ${ELEMENT_META[dominantElement].plainLabel}의 비중이 가장 높고, ${ELEMENT_META[weakestElement].plainLabel}은 상대적으로 적습니다. 많다고 무조건 좋거나 적다고 나쁜 것은 아닙니다. 익숙한 힘은 피곤할 때도 자동으로 반복되기 때문에, ${ELEMENT_META[dominantElement].excessText} 반대로 ${ELEMENT_META[weakestElement].plainText}을 일정 속에 의도적으로 넣으면 한쪽으로 쏠리는 것을 줄일 수 있습니다.`,
+        `건강에 관한 사주 해석은 병이나 체질을 진단하는 도구가 아닙니다. 실제 생활에서는 수면 시간, 식사 간격, 움직인 시간, 기분의 변화를 기록해 확인 가능한 신호를 먼저 보세요. ${profile.unknownTime ? "출생 시간을 모르므로 생활 리듬에 관한 해석은 해·달·날의 범위에서만 참고하는 것이 안전합니다." : "태어난 시간까지 반영했지만, 불편한 증상은 반드시 의료 전문가의 판단을 우선해야 합니다."}`,
+      ],
+      points: [`가장 익숙한 힘 · ${ELEMENT_META[dominantElement].plainLabel}`, `의식적으로 보충할 힘 · ${ELEMENT_META[weakestElement].plainLabel}`, `생활 기준 · 느낌보다 수면·식사·활동 기록`],
+    },
+  ];
+
+  if (lifeAvailable) {
+    detailedSections.push({
+      number: "06",
+      kicker: "큰 전환점 읽기",
+      title: "대운이 바뀌는 나이는 사건이 아니라 삶의 질문이 달라지는 때입니다",
+      paragraphs: [
+        `${lifeStartNote} 이후 큰 흐름은 대략 10년 단위로 바뀝니다. ${lifeTransitions.map((transition) => `약 ${transition.age}세에는 ${transition.headline.replace("시기", "흐름")}`).join(", ")}이 차례로 들어옵니다. 이 나이에 반드시 특정 사건이 생긴다는 뜻은 아니며, 이전 방식이 잘 맞지 않아 새로운 역할과 선택 기준을 찾게 될 가능성이 커진다는 의미입니다.`,
+        `전환기에는 바로 결론을 내리기보다 앞선 2년의 반복된 문제와 앞으로 2년 동안 키우고 싶은 능력을 함께 적어보세요. 대운의 이름보다 실제 생활에서 반복되는 주제를 확인하는 것이 더 중요합니다. 특히 흐름이 바뀌는 전후에는 직업, 관계, 거주처럼 큰 결정을 한 번에 묶기보다 순서를 나누는 편이 안전합니다.`,
+      ],
+      points: lifeTransitions.map((transition) => `${transition.age}세 전후 · ${transition.ganZhi} · ${transition.focus}`),
+    });
+    detailedSections.push(makeStageSection("07", "인생 전반 · 10–20대", "가능성을 시험하고 나만의 기준을 만드는 시간", lifeTimeline.slice(0, 2)));
+    detailedSections.push(makeStageSection("08", "인생 중반 · 30–50대", "선택한 일을 현실의 기반과 책임으로 바꾸는 시간", lifeTimeline.slice(2, 5)));
+    detailedSections.push(makeStageSection("09", "인생 후반 · 60–80대", "쌓아온 경험을 정리하고 나누며 깊이를 만드는 시간", lifeTimeline.slice(5, 8)));
+  }
+
+  detailedSections.push({
+    number: lifeAvailable ? "10" : "06",
+    kicker: "인생을 내 편으로 쓰는 법",
+    title: "운이 좋은 때를 기다리기보다, 나에게 맞는 선택 순서를 만드세요",
+    paragraphs: [
+      `${name}님의 사주는 ${ELEMENT_META[dayElement].plainLabel}의 힘을 없애라고 말하지 않습니다. 오히려 그 힘을 충분히 쓰되, ${favorable.map((element) => ELEMENT_META[element].plainLabel).join("과 ")}을 함께 두라고 권합니다. 하고 싶은 일이 생기면 먼저 ${ELEMENT_META[dayElement].plainText}을 사용하고, 그다음 ${favorable.map((element) => ELEMENT_META[element].plainText).join("과 ")}으로 현실성을 확인하는 순서가 잘 맞습니다.`,
+      `좋은 흐름에서는 기회를 넓히되 감당할 범위를 정하고, 조정이 필요한 흐름에서는 실패라고 단정하기보다 방식과 속도를 바꾸세요. 사주 전체에서 가장 중요한 것은 하나의 강점을 평생 같은 방식으로 반복하는 것이 아니라, 나이가 들수록 그 강점을 더 부드럽고 정확하게 사용하는 것입니다. 이 해석은 정답지가 아니라 중요한 선택 앞에서 내 패턴을 점검하는 지도처럼 활용하는 것이 가장 좋습니다.`,
+    ],
+    points: [`먼저 쓸 힘 · ${ELEMENT_META[dayElement].plainLabel}`, `함께 더할 힘 · ${favorable.map((element) => ELEMENT_META[element].plainLabel).join(" · ")}`, `마지막 확인 · 이 선택 뒤에도 시간·체력·관계가 남는가`],
+  });
+
+  const reportCharacters = detailedSections.reduce((sum, section) => sum + section.title.length + section.paragraphs.join("").length + section.points.join("").length, 0);
+  const reportBasis = `사주 원국 ${birthGz.filter((_, index) => index !== 3 || !profile.unknownTime).join(" · ")} · 중심 ${dayGan}${dayElement} · 타고난 힘 ${Math.round(supportRatio * 100)}% · ${lifeAvailable ? `${lifeTimeline.length}개 연령대 대운 반영` : "대운 방향 미확정"}`;
 
   return {
     profile,
@@ -529,6 +755,9 @@ export function createReading(profile: Profile, targetDate: string): SajuReading
         { label: "오래 갈수록 더할 힘", title: favorable.map((element) => ELEMENT_META[element].plainLabel).join(" · "), body: favorable.map((element) => ELEMENT_META[element].plainText).join(" 그리고 ") + "을 더할 때 삶의 균형이 좋아져요." },
         { label: "평생의 균형 포인트", title: `${ELEMENT_META[dominantElement].plainLabel}의 과속 줄이기`, body: ELEMENT_META[dominantElement].excessText + " 중요한 결론일수록 잠시 멈춰 확인해 보세요." },
       ],
+      detailedSections,
+      reportCharacters,
+      reportBasis,
       timeline: lifeTimeline,
       notice: lifeAvailable ? "나이대 점수는 좋고 나쁜 운명의 등급이 아니라, 그 시기의 흐름을 내 편으로 쓰기 쉬운 정도예요." : "전통 대운은 태어난 해의 음양과 성별에 따라 진행 방향이 달라져요. 성별을 선택하고 다시 보기를 누르면 10대부터 80대까지 정확한 방향으로 계산해 드려요.",
     },
