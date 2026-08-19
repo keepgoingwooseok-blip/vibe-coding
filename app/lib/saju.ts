@@ -1,4 +1,4 @@
-import { Solar } from "lunar-typescript";
+import { Lunar, LunarYear, Solar } from "lunar-typescript";
 
 export type ElementName = "목" | "화" | "토" | "금" | "수";
 
@@ -6,6 +6,8 @@ export type Profile = {
   name: string;
   birthDate: string;
   birthTime: string;
+  calendarType: "solar" | "lunar";
+  leapMonth: boolean;
   gender: "female" | "male" | "none";
   location: string;
   unknownTime: boolean;
@@ -56,6 +58,7 @@ export type SajuReading = {
   luckyColor: string;
   luckyDirection: string;
   confidence: string;
+  birthDateGuide: string;
 };
 
 const ELEMENTS: ElementName[] = ["목", "화", "토", "금", "수"];
@@ -108,6 +111,43 @@ function parseDate(value: string) {
 function parseTime(value: string) {
   const [hour, minute] = value.split(":").map(Number);
   return { hour: Number.isFinite(hour) ? hour : 12, minute: Number.isFinite(minute) ? minute : 0 };
+}
+
+export function getLunarLeapMonth(year: number) {
+  if (!Number.isFinite(year)) return 0;
+  try {
+    return LunarYear.fromYear(year).getLeapMonth();
+  } catch {
+    return 0;
+  }
+}
+
+export function getLunarMonthDays(year: number, month: number, leapMonth: boolean) {
+  if (!Number.isFinite(year) || !Number.isFinite(month)) return 29;
+  try {
+    const lunarMonth = LunarYear.fromYear(year).getMonth(leapMonth ? -month : month);
+    return lunarMonth?.getDayCount() ?? 29;
+  } catch {
+    return 29;
+  }
+}
+
+export function getBirthDateInfo(profile: Profile) {
+  const birth = parseDate(profile.birthDate);
+  const birthTime = profile.unknownTime ? { hour: 12, minute: 0 } : parseTime(profile.birthTime);
+  const birthLunar = profile.calendarType === "lunar"
+    ? Lunar.fromYmdHms(birth.year, profile.leapMonth ? -birth.month : birth.month, birth.day, birthTime.hour, birthTime.minute, 0)
+    : Solar.fromYmdHms(birth.year, birth.month, birth.day, birthTime.hour, birthTime.minute, 0).getLunar();
+  const birthSolar = birthLunar.getSolar();
+  const lunarMonth = Math.abs(birthLunar.getMonth());
+  const lunarLabel = `음력 ${birthLunar.getYear()}년 ${birthLunar.getMonth() < 0 ? "윤" : ""}${lunarMonth}월 ${birthLunar.getDay()}일`;
+  const solarLabel = `양력 ${birthSolar.getYear()}년 ${birthSolar.getMonth()}월 ${birthSolar.getDay()}일`;
+
+  return {
+    birthLunar,
+    solarValue: birthSolar.toYmd(),
+    guide: profile.calendarType === "lunar" ? `${lunarLabel} 입력 · ${solarLabel}로 환산` : `${solarLabel} 입력 · ${lunarLabel}로 환산`,
+  };
 }
 
 function generates(element: ElementName) {
@@ -231,9 +271,7 @@ export function moveDate(value: string, amount: number) {
 }
 
 export function createReading(profile: Profile, targetDate: string): SajuReading {
-  const birth = parseDate(profile.birthDate);
-  const birthTime = profile.unknownTime ? { hour: 12, minute: 0 } : parseTime(profile.birthTime);
-  const birthLunar = Solar.fromYmdHms(birth.year, birth.month, birth.day, birthTime.hour, birthTime.minute, 0).getLunar();
+  const { birthLunar, guide: birthDateGuide } = getBirthDateInfo(profile);
   const eight = birthLunar.getEightChar();
   eight.setSect(2);
 
@@ -374,5 +412,6 @@ export function createReading(profile: Profile, targetDate: string): SajuReading
     luckyColor: ELEMENT_META[primaryFavorable].colorName,
     luckyDirection: ELEMENT_META[primaryFavorable].direction,
     confidence: profile.unknownTime ? "출생 시간을 몰라 해·달·날만으로 간략히 읽었어요" : "태어난 해·달·날·시간을 모두 반영했어요",
+    birthDateGuide,
   };
 }

@@ -1,12 +1,14 @@
 "use client";
 
 import { FormEvent, useMemo, useRef, useState } from "react";
-import { createReading, getTodayValue, moveDate, type Profile } from "./lib/saju";
+import { createReading, getBirthDateInfo, getLunarLeapMonth, getLunarMonthDays, getTodayValue, moveDate, type Profile } from "./lib/saju";
 
 const DEFAULT_PROFILE: Profile = {
   name: "온담",
   birthDate: "1992-10-18",
   birthTime: "08:30",
+  calendarType: "solar",
+  leapMonth: false,
   gender: "female",
   location: "서울",
   unknownTime: false,
@@ -60,15 +62,45 @@ export default function Home() {
   const [profile, setProfile] = useState<Profile>(DEFAULT_PROFILE);
   const [targetDate, setTargetDate] = useState(getTodayValue);
   const [notice, setNotice] = useState(false);
+  const [formError, setFormError] = useState("");
   const reportRef = useRef<HTMLElement>(null);
   const reading = useMemo(() => createReading(profile, targetDate), [profile, targetDate]);
+  const [birthYear, birthMonth, birthDay] = draft.birthDate.split("-").map(Number);
+  const leapMonth = getLunarLeapMonth(birthYear);
+  const lunarDays = getLunarMonthDays(birthYear, birthMonth, draft.leapMonth);
+  const years = useMemo(() => Array.from({ length: new Date().getFullYear() - 1899 }, (_, index) => new Date().getFullYear() - index), []);
 
   const update = <K extends keyof Profile>(key: K, value: Profile[K]) => {
     setDraft((current) => ({ ...current, [key]: value }));
+    setFormError("");
+  };
+
+  const updateLunarDate = (part: "year" | "month" | "day", value: number) => {
+    const nextYear = part === "year" ? value : birthYear;
+    const nextMonth = part === "month" ? value : birthMonth;
+    const nextLeap = draft.leapMonth && getLunarLeapMonth(nextYear) === nextMonth;
+    const maxDay = getLunarMonthDays(nextYear, nextMonth, nextLeap);
+    const nextDay = Math.min(part === "day" ? value : birthDay, maxDay);
+    setDraft((current) => ({
+      ...current,
+      birthDate: `${nextYear}-${String(nextMonth).padStart(2, "0")}-${String(nextDay).padStart(2, "0")}`,
+      leapMonth: nextLeap,
+    }));
+    setFormError("");
   };
 
   const submit = (event: FormEvent) => {
     event.preventDefault();
+    try {
+      const birthInfo = getBirthDateInfo(draft);
+      if (birthInfo.solarValue > getTodayValue()) {
+        setFormError("아직 오지 않은 날짜예요. 출생일을 다시 확인해 주세요.");
+        return;
+      }
+    } catch {
+      setFormError("선택한 음력 날짜를 달력에서 찾을 수 없어요. 윤달과 날짜를 다시 확인해 주세요.");
+      return;
+    }
     setProfile({ ...draft, name: draft.name.trim() || "당신" });
     setNotice(true);
     window.setTimeout(() => reportRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
@@ -92,13 +124,35 @@ export default function Home() {
 
       <section className="hero" id="top">
         <div className="heroCopy">
-          <div className="eyebrow"><span /> 오늘의 흐름을 읽는 작은 의식</div>
-          <h1>나의 사주로 읽는<br /><em>오늘의 흐름</em></h1>
-          <p>태어난 해·달·날·시간과 오늘 날짜의 흐름을 함께 살펴, 지금 힘을 줄 곳과 가볍게 지나갈 곳을 쉬운 말로 정리해 드려요.</p>
+          <div className="eyebrow"><span /> CLASSIC WISDOM, TODAY&apos;S LANGUAGE</div>
+          <h1>오늘의 나를<br /><em>조금 더 잘 쓰는 법</em></h1>
+          <p>태어난 순간의 사주와 오늘의 흐름을 함께 읽어, 힘을 줄 곳과 쉬어갈 곳을 어려운 용어 없이 알려드려요.</p>
+          <div className="heroFacts">
+            <span><b>4</b>권의 명리 고전</span>
+            <span><b>24</b>절기 반영</span>
+            <span><b>0</b>개인정보 저장</span>
+          </div>
         </div>
-        <div className="heroStamp" aria-hidden="true">
-          <span>甲 乙 丙 丁 戊</span>
-          <span>子 丑 寅 卯 辰</span>
+        <div className="heroOrbit" aria-hidden="true">
+          <div className="orbitCore"><small>오늘의</small><b>今日</b><span>FLOW</span></div>
+          <i className="orbitTag tagOne">시작</i><i className="orbitTag tagTwo">표현</i><i className="orbitTag tagThree">균형</i>
+        </div>
+      </section>
+
+      <section className="trustShelf" aria-labelledby="trust-title">
+        <div className="trustIntro">
+          <span className="trustBadge">해석 기준 공개</span>
+          <h2 id="trust-title">감이 아닌, <em>네 권의 고전</em>에서 시작합니다</h2>
+          <p>한 권의 주장만 따르지 않고, 계절·균형·보완·오늘의 관계를 각 분야의 대표 고전으로 교차해 읽어요.</p>
+          <a href="#sources">책과 풀이 원칙 자세히 보기 <span>↗</span></a>
+        </div>
+        <div className="trustBooks">
+          {sourceBooks.map((book) => (
+            <a href={book.href} target="_blank" rel="noreferrer" key={book.title}>
+              <span>{book.order}</span>
+              <div><small>{book.original}</small><b>{book.title}</b><em>{book.role}</em></div>
+            </a>
+          ))}
         </div>
       </section>
 
@@ -115,10 +169,38 @@ export default function Home() {
           <label htmlFor="name">이름<span className="inputHint">결과에만 표시돼요</span></label>
           <input id="name" value={draft.name} onChange={(event) => update("name", event.target.value)} maxLength={20} required />
 
+          <fieldset className="calendarField">
+            <legend>달력 기준</legend>
+            <div className="calendarSegment">
+              <label className={draft.calendarType === "solar" ? "active" : ""}>
+                <input type="radio" name="calendar-type" value="solar" checked={draft.calendarType === "solar"} onChange={() => setDraft((current) => ({ ...current, calendarType: "solar", leapMonth: false }))} />
+                <b>양력</b><span>일반 달력 날짜</span>
+              </label>
+              <label className={draft.calendarType === "lunar" ? "active" : ""}>
+                <input type="radio" name="calendar-type" value="lunar" checked={draft.calendarType === "lunar"} onChange={() => setDraft((current) => ({ ...current, calendarType: "lunar", leapMonth: false }))} />
+                <b>음력</b><span>전통 달력 날짜</span>
+              </label>
+            </div>
+          </fieldset>
+
           <div className="twoColumns formRow">
             <div>
-              <label htmlFor="birth-date">생년월일<span className="inputHint">양력</span></label>
-              <input id="birth-date" type="date" min="1900-01-01" max={getTodayValue()} value={draft.birthDate} onChange={(event) => update("birthDate", event.target.value)} required />
+              <label htmlFor={draft.calendarType === "solar" ? "birth-date" : "lunar-year"}>생년월일<span className="inputHint">{draft.calendarType === "solar" ? "양력 기준" : "음력 기준"}</span></label>
+              {draft.calendarType === "solar" ? (
+                <input id="birth-date" type="date" min="1900-01-01" max={getTodayValue()} value={draft.birthDate} onChange={(event) => update("birthDate", event.target.value)} required />
+              ) : (
+                <div className="lunarDateFields">
+                  <select id="lunar-year" aria-label="음력 출생 연도" value={birthYear} onChange={(event) => updateLunarDate("year", Number(event.target.value))}>{years.map((year) => <option value={year} key={year}>{year}년</option>)}</select>
+                  <select aria-label="음력 출생 월" value={birthMonth} onChange={(event) => updateLunarDate("month", Number(event.target.value))}>{Array.from({ length: 12 }, (_, index) => index + 1).map((month) => <option value={month} key={month}>{month}월</option>)}</select>
+                  <select aria-label="음력 출생 일" value={Math.min(birthDay, lunarDays)} onChange={(event) => updateLunarDate("day", Number(event.target.value))}>{Array.from({ length: lunarDays }, (_, index) => index + 1).map((day) => <option value={day} key={day}>{day}일</option>)}</select>
+                </div>
+              )}
+              {draft.calendarType === "lunar" && leapMonth > 0 && (
+                <label className={`leapToggle ${birthMonth !== leapMonth ? "disabled" : ""}`}>
+                  <input type="checkbox" checked={draft.leapMonth} disabled={birthMonth !== leapMonth} onChange={(event) => update("leapMonth", event.target.checked)} />
+                  {leapMonth}월은 윤달이 있어요 · 윤{leapMonth}월로 입력
+                </label>
+              )}
             </div>
             <div>
               <label htmlFor="birth-time">태어난 시간</label>
@@ -148,6 +230,7 @@ export default function Home() {
             태어난 시간을 정확히 몰라요
           </label>
           <p className="formHelp">대한민국 표준시(UTC+9)를 사용합니다. 출생 시간이 없으면 시주를 제외해 해석 범위가 줄어듭니다.</p>
+          {formError && <p className="formError" role="alert">{formError}</p>}
           <button className="primaryButton" type="submit">오늘의 사주 보기 <span>→</span></button>
           <p className="privacy"><span>●</span> 입력 정보는 브라우저 안에서만 계산하며 서버에 저장하지 않아요.</p>
         </form>
@@ -162,6 +245,8 @@ export default function Home() {
               <button type="button" className="todayButton" onClick={() => setTargetDate(getTodayValue())}>오늘</button>
             </div>
           </div>
+
+          <div className="birthConversion"><span>{profile.calendarType === "lunar" ? "음력 입력" : "양력 입력"}</span>{reading.birthDateGuide}</div>
 
           <div className="keyword">
             <span className="seal">今日</span>
